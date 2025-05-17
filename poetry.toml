@@ -1,0 +1,4 @@
+[installer]
+parallel = false
+max-workers = 1
+modern-installation = true

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "kalman-2d-simulator"
+version = "0.1.0"
+description = "kalman-2d-simulator project"
+authors = ["Nick Mazurkin <mazurkin@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.16"
+argh = "0.29.4"
+tzlocal = "5.2"
+numpy = "2.2.5"
+pygame = "2.6.1"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "7.2.0 "
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
