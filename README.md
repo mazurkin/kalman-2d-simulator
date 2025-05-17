@@ -9,7 +9,7 @@ With some help of ChatGPT
 Requires [Conda](https://anaconda.org/anaconda/conda)
 
 ```shell
-# create the new Conda environment
+# create the new Conda environment with Python and Poetry
 make env-init
 
 # install the packages with Poetry
@@ -17,6 +17,11 @@ make env-create
 ```
 
 ## run
+
+```shell
+# run the simulation
+make run
+```
 
 Use the keys:
 - the arrow keys to increase/decrease acceleration of the object
@@ -29,8 +34,3 @@ Indicators:
 - noisy measurement: `red`
 - estimation from the Kalman filter: `green`
 - median and mean averaging: `gray`
-
-```shell
-# run the simulation
-make run
-```
