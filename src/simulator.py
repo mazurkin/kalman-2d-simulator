@@ -134,8 +134,6 @@ class Simulator:
                 # stop the object
                 self.vel: np.array = np.array([0.0, 0.0], dtype=np.float64)
                 self.acc: np.array = np.array([0.0, 0.0], dtype=np.float64)
-            if keys[pygame.K_ESCAPE]:
-                running = False
 
             # limit the acceleration
             self.acc = np.minimum(self.acc, (+self.ACC_LIMIT, +self.ACC_LIMIT))
@@ -206,6 +204,11 @@ class Simulator:
             pygame.display.flip()
 
             self.clock.tick(self.FPS)
+
+            if keys[pygame.K_p]:
+                pygame.image.save(self.screen, '/tmp/simulator.png')
+            if keys[pygame.K_ESCAPE]:
+                running = False
 
         pygame.quit()
 
