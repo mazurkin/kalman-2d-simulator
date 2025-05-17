@@ -87,7 +87,7 @@ class Simulator:
         pygame.font.init()
         pygame.display.set_caption("Kalman Filter 2D Simulation")
 
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.DOUBLEBUF, 32)
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont('Courier', 20)
 
@@ -170,24 +170,41 @@ class Simulator:
             median_x = np.median(self.last_x)
             median_y = np.median(self.last_y)
 
+            # extrapolated
+            extrapolated_x = self.extrapolate(self.last_x)
+            extrapolated_y = self.extrapolate(self.last_y)
+
             # real position: Blue
-            pygame.draw.circle(self.screen, (0, 0, 255), self.to_screen(self.pos), 6)
+            pygame.draw.line(
+                self.screen,
+                (196, 196, 255),
+                self.to_screen((0.0, 0.0)),
+                self.to_screen(self.pos),
+                1,
+            )
+
+            # real position: Blue
+            pygame.draw.circle(self.screen, (0, 0, 255), self.to_screen(self.pos), 8)
+
+            # approximate estimation (mean): Gray
+            pygame.draw.circle(self.screen, (64, 64, 64), self.to_screen((mean_x, mean_y)), 2)
+
+            # approximate estimation (median): Gray
+            pygame.draw.circle(self.screen, (64, 64, 64), self.to_screen((median_x, median_y)), 2)
+
+            # approximate estimation (extrapolation): Gray
+            pygame.draw.circle(self.screen, (196, 196, 196), self.to_screen((extrapolated_x, extrapolated_y)), 2)
 
             # noisy measurement: Red
-            pygame.draw.circle(self.screen, (255, 0, 0), self.to_screen(meas), 2)
-
-            # estimate mean: Gray
-            pygame.draw.circle(self.screen, (32, 32, 32), self.to_screen((mean_x, mean_y)), 2)
-
-            # estimate median: Gray
-            pygame.draw.circle(self.screen, (32, 32, 32), self.to_screen((median_x, median_y)), 2)
+            pygame.draw.circle(self.screen, (255, 0, 0), self.to_screen(meas), 4)
 
             # estimated by the Kalman filter (position point): Green
             pygame.draw.circle(self.screen, (0, 255, 0), self.to_screen(estimate_p.ravel()), 4)
 
             # estimated by the Kalman filter (speed vector): Green
             pygame.draw.line(
-                self.screen, (0, 255, 0),
+                self.screen,
+                (0, 255, 0),
                 self.to_screen(estimate_p.ravel()),
                 self.to_screen((estimate_p + estimate_v).ravel()),
                 2,
@@ -211,6 +228,13 @@ class Simulator:
                 running = False
 
         pygame.quit()
+
+    @classmethod
+    def extrapolate(cls, data):
+        x = np.linspace(0, cls.MEASUREMENTS, num=cls.MEASUREMENTS, endpoint=False)
+        q = np.polyfit(x, data, deg=2)
+        p = np.poly1d(q)
+        return p(cls.MEASUREMENTS)
 
     @classmethod
     def to_screen(cls, p):
