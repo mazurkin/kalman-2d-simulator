@@ -104,36 +104,17 @@ class Simulator:
             keys = pygame.key.get_pressed()
 
             if keys[pygame.K_RIGHT]:
-                if self.acc[0] >= 0.0:
-                    self.acc[0] += self.ACC_INCREMENT
-                else:
-                    self.acc[0] = 0.0
+                self.accelerate_x()
             if keys[pygame.K_LEFT]:
-                if self.acc[0] <= 0.0:
-                    self.acc[0] -= self.ACC_INCREMENT
-                else:
-                    self.acc[0] = 0.0
+                self.decelerate_x()
             if keys[pygame.K_UP]:
-                if self.acc[1] >= 0.0:
-                    self.acc[1] += self.ACC_INCREMENT
-                else:
-                    self.acc[1] = 0.0
+                self.accelerate_y()
             if keys[pygame.K_DOWN]:
-                if self.acc[1] <= 0.0:
-                    self.acc[1] -= self.ACC_INCREMENT
-                else:
-                    self.acc[1] = 0.0
+                self.decelerate_y()
             if keys[pygame.K_r]:
-                # reset the object
-                self.pos: np.array = np.array([0.0, 0.0], dtype=np.float64)
-                self.vel: np.array = np.array([0.0, 0.0], dtype=np.float64)
-                self.acc: np.array = np.array([0.0, 0.0], dtype=np.float64)
-                self.last_x.extend(np.zeros(self.MEASUREMENTS))
-                self.last_y.extend(np.zeros(self.MEASUREMENTS))
+                self.reset()
             if keys[pygame.K_s]:
-                # stop the object
-                self.vel: np.array = np.array([0.0, 0.0], dtype=np.float64)
-                self.acc: np.array = np.array([0.0, 0.0], dtype=np.float64)
+                self.stop()
 
             # limit the acceleration
             self.acc = np.minimum(self.acc, (+self.ACC_LIMIT, +self.ACC_LIMIT))
@@ -223,11 +204,49 @@ class Simulator:
             self.clock.tick(self.FPS)
 
             if keys[pygame.K_p]:
-                pygame.image.save(self.screen, '/tmp/simulator.png')
+                self.screenshot()
             if keys[pygame.K_ESCAPE]:
                 running = False
 
         pygame.quit()
+
+    def accelerate_x(self):
+        if self.acc[0] >= 0.0:
+            self.acc[0] += self.ACC_INCREMENT
+        else:
+            self.acc[0] = 0.0
+
+    def decelerate_x(self):
+        if self.acc[0] <= 0.0:
+            self.acc[0] -= self.ACC_INCREMENT
+        else:
+            self.acc[0] = 0.0
+
+    def accelerate_y(self):
+        if self.acc[1] >= 0.0:
+            self.acc[1] += self.ACC_INCREMENT
+        else:
+            self.acc[1] = 0.0
+
+    def decelerate_y(self):
+        if self.acc[1] <= 0.0:
+            self.acc[1] -= self.ACC_INCREMENT
+        else:
+            self.acc[1] = 0.0
+
+    def reset(self):
+        self.pos: np.array = np.array([0.0, 0.0], dtype=np.float64)
+        self.vel: np.array = np.array([0.0, 0.0], dtype=np.float64)
+        self.acc: np.array = np.array([0.0, 0.0], dtype=np.float64)
+        self.last_x.extend(np.zeros(self.MEASUREMENTS))
+        self.last_y.extend(np.zeros(self.MEASUREMENTS))
+
+    def stop(self):
+        self.vel: np.array = np.array([0.0, 0.0], dtype=np.float64)
+        self.acc: np.array = np.array([0.0, 0.0], dtype=np.float64)
+
+    def screenshot(self):
+        pygame.image.save(self.screen, '/tmp/simulator.png')
 
     @classmethod
     def extrapolate(cls, data):

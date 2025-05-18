@@ -2,7 +2,7 @@
 
 With some help of ChatGPT
 
-![Kalman 2D simulation](doc/simulator.png)
+![Kalman 2D simulation](doc/simulator.gif)
 
 ## installation
 
