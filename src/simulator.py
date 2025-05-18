@@ -155,34 +155,67 @@ class Simulator:
             extrapolated_x = self.extrapolate(self.last_x)
             extrapolated_y = self.extrapolate(self.last_y)
 
-            # real position: Blue
+            # vector, real position: Blue
             pygame.draw.line(
                 self.screen,
-                (196, 196, 255),
+                (236, 236, 255),
                 self.to_screen((0.0, 0.0)),
                 self.to_screen(self.pos),
                 1,
             )
 
-            # real position: Blue
+            # vector, approximate estimation (mean): Gray
+            pygame.draw.line(
+                self.screen,
+                (64, 64, 64),
+                self.to_screen(self.pos),
+                self.to_screen((mean_x, mean_y)),
+                1,
+            )
+
+            # vector, approximate estimation (median): Gray
+            pygame.draw.line(
+                self.screen,
+                (64, 64, 64),
+                self.to_screen(self.pos),
+                self.to_screen((median_x, median_y)),
+                1,
+            )
+
+            # vector, approximate estimation (extrapolation): Gray
+            pygame.draw.line(
+                self.screen,
+                (64, 64, 64),
+                self.to_screen(self.pos),
+                self.to_screen((extrapolated_x, extrapolated_y)),
+                1,
+            )
+
+            # vector, noisy measurement: Red
+            pygame.draw.line(
+                self.screen,
+                (255, 0, 0),
+                self.to_screen(self.pos),
+                self.to_screen(meas),
+                1,
+            )
+
+            # dot, real position: Blue
             pygame.draw.circle(self.screen, (0, 0, 255), self.to_screen(self.pos), 8)
 
-            # approximate estimation (mean): Gray
+            # dot, approximate estimation (mean): Gray
             pygame.draw.circle(self.screen, (64, 64, 64), self.to_screen((mean_x, mean_y)), 2)
 
-            # approximate estimation (median): Gray
+            # dot, approximate estimation (median): Gray
             pygame.draw.circle(self.screen, (64, 64, 64), self.to_screen((median_x, median_y)), 2)
 
-            # approximate estimation (extrapolation): Gray
-            pygame.draw.circle(self.screen, (196, 196, 196), self.to_screen((extrapolated_x, extrapolated_y)), 2)
+            # dot, approximate estimation (extrapolation): Gray
+            pygame.draw.circle(self.screen, (64, 64, 64), self.to_screen((extrapolated_x, extrapolated_y)), 2)
 
-            # noisy measurement: Red
+            # dot, noisy measurement: Red
             pygame.draw.circle(self.screen, (255, 0, 0), self.to_screen(meas), 4)
 
-            # estimated by the Kalman filter (position point): Green
-            pygame.draw.circle(self.screen, (0, 255, 0), self.to_screen(estimate_p.ravel()), 4)
-
-            # estimated by the Kalman filter (speed vector): Green
+            # vector, estimated by the Kalman filter (speed vector): Green
             pygame.draw.line(
                 self.screen,
                 (0, 255, 0),
@@ -190,6 +223,9 @@ class Simulator:
                 self.to_screen((estimate_p + estimate_v).ravel()),
                 2,
             )
+
+            # dot, estimated by the Kalman filter (position point): Green
+            pygame.draw.circle(self.screen, (0, 255, 0), self.to_screen(estimate_p.ravel()), 4)
 
             # parameters
             self.screen.blit(self.font.render(f'px: {self.pos[0]:.2f}', True, (0, 0, 0)), (5, 10))
@@ -257,7 +293,9 @@ class Simulator:
 
     @classmethod
     def to_screen(cls, p):
-        return int(cls.WIDTH / 2.0 + p[0] * cls.SCALE), int(cls.HEIGHT / 2.0  - p[1] * cls.SCALE)
+        x = int(cls.WIDTH / 2.0 + p[0] * cls.SCALE)
+        y = int(cls.HEIGHT / 2.0 - p[1] * cls.SCALE)
+        return x, y
 
 
 if __name__ == '__main__':
